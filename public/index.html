@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Fawry HR AI · مساعد الموارد البشرية الذكي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;800&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0A1F3C;--ink-2:#12294B;--ink-3:#1B365D;--line:rgba(255,255,255,.12);--green:#F9A51A;--paper:#FFFFFF;--muted:rgba(255,255,255,.68);--muted-2:rgba(255,255,255,.42);--display:'Poppins','Tajawal',system-ui,sans-serif;--body:'Tajawal','Poppins',system-ui,-apple-system,sans-serif;--r:16px;}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--paper);font-family:var(--body);font-size:15px;line-height:1.65;overflow:hidden}
+#intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px;text-align:center;overflow-y:auto;background:radial-gradient(1000px 620px at 50% 34%, rgba(249,165,26,.15), transparent 62%),var(--ink);transition:opacity .6s ease, transform .6s ease;}
+#intro.gone{opacity:0;transform:scale(1.03);pointer-events:none}
+.logo-stage{width:78px;height:78px;border-radius:20px;background:var(--green);color:#0A1F3C;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:34px;animation:rise .9s cubic-bezier(.2,.8,.25,1) both;}
+.rule{width:0;height:2px;background:var(--green);border-radius:2px;margin:24px 0 18px;flex-shrink:0;animation:grow .8s cubic-bezier(.2,.8,.25,1) 1s both}
+#intro h1{font-family:var(--display);font-weight:800;letter-spacing:-.02em;font-size:clamp(26px,6.2vw,40px);line-height:1.15;animation:rise .8s cubic-bezier(.2,.8,.25,1) 1.05s both;}
+#intro h1 em{font-style:normal;color:var(--green)}
+#intro .ar-h{font-weight:700;font-size:clamp(15px,4vw,20px);color:var(--muted);margin-top:8px;direction:rtl;animation:rise .8s cubic-bezier(.2,.8,.25,1) 1.2s both;}
+#intro p.sub{max-width:430px;color:var(--muted);margin-top:16px;font-size:14.5px;flex-shrink:0;direction:rtl;animation:rise .8s cubic-bezier(.2,.8,.25,1) 1.35s both;}
+#startBtn{margin-top:32px;font-family:var(--display);font-weight:600;font-size:15px;background:var(--green);color:#0A1F3C;border:none;border-radius:999px;padding:15px 34px;cursor:pointer;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 34px rgba(249,165,26,.30);transition:.2s;animation:rise .8s cubic-bezier(.2,.8,.25,1) 1.5s both;}
+#startBtn:hover{transform:translateY(-2px);background:#FFB733}
+#startBtn svg{width:17px;height:17px}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes grow{from{width:0}to{width:64px}}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(249,165,26,.6)}70%{box-shadow:0 0 0 8px rgba(249,165,26,0)}100%{box-shadow:0 0 0 0 rgba(249,165,26,0)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-5px);opacity:1}}
+#app{position:fixed;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .5s ease .1s;}
+#app.on{display:flex}
+#app.show{opacity:1}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(10,31,60,.94);border-bottom:1px solid var(--line);flex-shrink:0;z-index:5}
+header .mark{width:38px;height:38px;border-radius:11px;background:var(--green);color:#0A1F3C;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:19px}
+header .who{flex:1;min-width:0}
+header .who strong{display:block;font-family:var(--display);font-weight:600;font-size:14.5px}
+header .who span{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(249,165,26,.6);animation:ping 2.4s infinite}
+.clearBtn{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:999px;padding:7px 12px;font-family:var(--display);font-weight:600;font-size:11.5px;cursor:pointer}
+.clearBtn:hover{border-color:var(--green);color:var(--green)}
+#log{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;max-width:760px;width:100%;animation:pop .38s cubic-bezier(.2,.8,.25,1) both}
+.row.me{margin-left:auto;justify-content:flex-end}
+.av{width:30px;height:30px;border-radius:9px;background:var(--green);color:#0A1F3C;display:grid;place-items:center;font-family:var(--display);font-weight:800;flex-shrink:0}
+.bub{background:var(--ink-2);border:1px solid var(--line);border-radius:var(--r);border-top-left-radius:5px;padding:13px 15px;font-size:14.2px;max-width:88%}
+.row.me .bub{background:var(--green);color:#0A1F3C;border-radius:var(--r);border-top-right-radius:5px}
+.bub[dir="rtl"]{text-align:right;font-size:14.8px}
+.bub strong{color:var(--green)}
+.row.me .bub strong{color:#0A1F3C}
+.bub .src{display:flex;width:max-content;margin-top:12px;padding:4px 10px;border:1px solid rgba(249,165,26,.3);background:rgba(249,165,26,.09);border-radius:999px;font-family:var(--display);font-weight:600;font-size:10.5px;color:var(--green)}
+.tbl{width:100%;border-collapse:collapse;margin:10px 0 4px;font-size:13.4px}
+.tbl th{font-family:var(--display);font-weight:600;font-size:10.5px;color:var(--muted);padding:6px 10px 6px 0;border-bottom:1px solid var(--line)}
+.tbl td{padding:7px 10px 7px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td:last-child{color:var(--green)}
+.typing{display:flex;gap:4px;padding:5px 2px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1.3s infinite}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
+.composer{flex-shrink:0;padding:10px 16px calc(14px + env(safe-area-inset-bottom));display:flex;gap:10px;align-items:flex-end;background:rgba(10,31,60,.94)}
+#q{flex:1;background:var(--ink-3);border:1px solid var(--line);border-radius:22px;color:var(--paper);font-family:var(--body);font-size:15px;padding:13px 18px;resize:none;max-height:120px;outline:none}
+#send{width:46px;height:46px;border-radius:50%;border:none;background:var(--green);color:#0A1F3C;cursor:pointer;flex-shrink:0}
+#send:disabled{opacity:.5;cursor:default}
+</style>
+</head>
+<body>
+
+<section id="intro">
+  <div class="logo-stage">F</div>
+  <div class="rule"></div>
+  <h1>Fawry <em>HR</em> Assistant</h1>
+  <div class="ar-h">مساعدك الذكي لقانون العمل والموارد البشرية</div>
+  <p class="sub">اسأل أي سؤال عن حقوقك وواجباتك الوظيفية، وهرد عليك اعتمادًا على النص الكامل لقانون العمل رقم 14 لسنة 2025 وقرار وزير العمل رقم 162 لسنة 2026 (لائحة تنظيم العمل).</p>
+  <button id="startBtn">Start chat · ابدأ المحادثة<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+  <div class="foot" style="margin-top:30px;font-size:11.5px;color:var(--muted-2)">POWERED BY FAWRY HR · AI مبني على نص القانون الكامل</div>
+</section>
+
+<div id="app">
+  <header>
+    <div class="mark">F</div>
+    <div class="who"><strong>Fawry HR Assistant</strong><span><i class="dot"></i> AI متصل · قانون 14/2025 وقرار 162/2026</span></div>
+    <button class="clearBtn" id="clearBtn">محادثة جديدة</button>
+  </header>
+  <div id="log"></div>
+  <div class="composer"><textarea id="q" rows="1" placeholder="اكتب سؤالك هنا…"></textarea><button id="send">➤</button></div>
+</div>
+
+<script>
+// عنوان الـ backend بتاعنا (نفس السيرفر اللي بيقدم الصفحة دي)
+const API_URL = "/api/chat";
+
+let history = [];
+
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmt(text){
+  let html = esc(text).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+  const lines = html.split("\n");
+  let out = [], tbl = [];
+  function flushTbl(){
+    if(!tbl.length) return;
+    let rows = tbl.map(r=>r.split("|").map(c=>c.trim()).filter((c,i,a)=> !(i===0 && c==="") && !(i===a.length-1 && c==="")));
+    let head = rows[0];
+    let body = rows.slice(1).filter(r=>!r.every(c=>/^:?-+:?$/.test(c)));
+    let t = "<table class='tbl'><tr>" + head.map(c=>"<th>"+c+"</th>").join("") + "</tr>";
+    body.forEach(r=>{ t += "<tr>" + r.map(c=>"<td>"+c+"</td>").join("") + "</tr>"; });
+    t += "</table>";
+    out.push(t);
+    tbl = [];
+  }
+  for(const line of lines){
+    if(/^\|.*\|$/.test(line.trim())){ tbl.push(line.trim()); }
+    else { flushTbl(); out.push(line); }
+  }
+  flushTbl();
+  return out.join("<br>").replace(/<br>(<table)/g,"$1").replace(/(<\/table>)<br>/g,"$1");
+}
+
+const log = document.getElementById("log");
+const qEl = document.getElementById("q");
+const sendBtn = document.getElementById("send");
+
+function addRow(text, who, source){
+  const row = document.createElement("div");
+  row.className = "row" + (who==="me" ? " me" : "");
+  const bub = "<div class='bub' dir='auto'>" + fmt(text) + (source ? "<div class='src'>"+source+"</div>" : "") + "</div>";
+  row.innerHTML = who==="me" ? bub : "<div class='av'>F</div>" + bub;
+  log.appendChild(row); log.scrollTop = log.scrollHeight;
+  return row;
+}
+
+function addTyping(){
+  const row = document.createElement("div");
+  row.className = "row";
+  row.id = "typingRow";
+  row.innerHTML = "<div class='av'>F</div><div class='bub'><div class='typing'><i></i><i></i><i></i></div></div>";
+  log.appendChild(row); log.scrollTop = log.scrollHeight;
+}
+function removeTyping(){
+  const r = document.getElementById("typingRow");
+  if(r) r.remove();
+}
+
+async function ask(text){
+  if(!text.trim()) return;
+  addRow(text, "me");
+  qEl.value = ""; qEl.style.height = "auto";
+  sendBtn.disabled = true;
+  addTyping();
+
+  history.push({ role: "user", content: text });
+
+  try{
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: history })
+    });
+    const data = await response.json();
+    removeTyping();
+
+    if(response.ok && data.answer){
+      history.push({ role: "assistant", content: data.answer });
+      addRow(data.answer, "bot", "Fawry HR AI · قانون العمل 14/2025 وقرار 162/2026");
+    } else {
+      addRow("معلش، حصل خطأ:\n" + (data.error || "غير معروف"), "bot", "خطأ");
+      history.pop();
+    }
+  } catch(err){
+    removeTyping();
+    addRow("معلش، حصل خطأ في الاتصال بالسيرفر:\n" + err.message, "bot", "خطأ اتصال");
+    history.pop();
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+document.getElementById("startBtn").onclick = ()=>{
+  document.getElementById("intro").classList.add("gone");
+  document.getElementById("app").classList.add("on");
+  setTimeout(()=>{
+    document.getElementById("app").classList.add("show");
+    document.getElementById("intro").style.display = "none";
+    addRow("أهلًا بيك في **Fawry HR** 👋 اسألني أي سؤال عن قانون العمل رقم 14 لسنة 2025 أو لائحة تنظيم العمل، وهرد عليك من النص الأصلي فعليًا!", "bot");
+  }, 500);
+};
+
+sendBtn.onclick = ()=>ask(qEl.value);
+qEl.addEventListener("keydown", e=>{ if(e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(qEl.value); } });
+qEl.addEventListener("input", ()=>{ qEl.style.height = "auto"; qEl.style.height = Math.min(qEl.scrollHeight,120)+"px"; });
+
+document.getElementById("clearBtn").onclick = ()=>{
+  history = [];
+  log.innerHTML = "";
+  addRow("بدأنا محادثة جديدة 🔄 اسألني أي سؤال عن قانون العمل.", "bot");
+};
+</script>
+</body>
+</html>
