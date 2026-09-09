@@ -1,0 +1,9 @@
+{
+  "name": "fawry-hr-ai-openrouter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Fawry HR AI — عن طريق OpenRouter (موديلات مجانية أو رخيصة جدًا)، بدون سيرفر داخلي وبدون تحميل",
+  "engines": {
+    "node": ">=18"
+  }
+}
